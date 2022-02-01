@@ -1,1 +1,1 @@
-export const SITE_NAME = "Full React Typescript CRA Template";
+export const SITE_NAME = "School Enrollment Application";
