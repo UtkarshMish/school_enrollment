@@ -5,22 +5,33 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
 @Entity
-@Table(name = "roles")
-public class Roles {
+@AllArgsConstructor
+@RequiredArgsConstructor
+@NoArgsConstructor
+public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Double id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(nullable = false, unique = true)
-    private String role;
+    private String name;
+
+    public Role() {
+    }
+
+    public Role(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 
 }
