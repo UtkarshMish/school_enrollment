@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
-@Slf4j
 @Service
 public class UserService {
 
@@ -34,6 +32,10 @@ public class UserService {
 
     public void removeAll(List<Users> entities) {
         userRepository.deleteAll(entities);
+    }
+
+    public void removeAll() {
+        userRepository.deleteAll();
     }
 
 }

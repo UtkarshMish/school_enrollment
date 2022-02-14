@@ -8,12 +8,9 @@ import com.enrollment.school.school_enrollment.repository.RolesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-@NoArgsConstructor
+
 @RequiredArgsConstructor
 @Service
 public class RolesService {
