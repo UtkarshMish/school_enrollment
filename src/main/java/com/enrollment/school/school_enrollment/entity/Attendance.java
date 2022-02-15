@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Attendance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Double id;
+    private Integer id;
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Users student;

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 public class Marks {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Double id;
+    private Integer id;
 
     @ManyToOne(cascade = CascadeType.ALL, targetEntity = Users.class)
     private Users student;

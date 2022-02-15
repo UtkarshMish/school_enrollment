@@ -32,7 +32,7 @@ public class Users {
     @NotNull(message = "required value")
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @NotNull(message = "required value")
     private String email;
 

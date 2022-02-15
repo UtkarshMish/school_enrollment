@@ -14,10 +14,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.MODULE)
 public class Assessments {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Double id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(nullable = false, unique = true)
     private String name;
+
 
 }

@@ -22,6 +22,10 @@ public class UserService {
         return user;
     }
 
+    public Users findOne(String name) {
+        return userRepository.findByName(name);
+    }
+
     public List<Users> findAll() {
         return userRepository.findAll();
     }

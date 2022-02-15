@@ -18,7 +18,8 @@ public class RolesService {
     private RolesRepository rolesRepository;
 
     public Role save(Role roles) {
-        return rolesRepository.save(roles);
+        rolesRepository.save(roles);
+        return roles;
     }
 
     public Role findByName(String name) {
