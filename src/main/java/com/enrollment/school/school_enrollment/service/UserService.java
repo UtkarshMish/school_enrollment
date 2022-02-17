@@ -22,6 +22,9 @@ public class UserService {
         return user;
     }
 
+    public void removeOneById(Integer id) {
+        userRepository.deleteById(id);
+    }
     public Users findOne(String name) {
         return userRepository.findByName(name);
     }

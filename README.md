@@ -39,7 +39,7 @@ Attendance: Faculty can add the attendance for the students that are managed by 
 
 Fees: Admin can manage the fees of the students. Also, the student can view the updated records for the fees.
 
-Subjects and assignment: Faculty and Admin can new subjects and assignments according to the subject that is view by the students.
+Subjects and assignment: Faculty and Admin can add new subjects and assignments according to the subject that is view by the students.
 
 Mark sheet: Student can view their mark sheet just need to enter the roll number. Admin and faculty can Add/Update/Delete all the details about the mark sheet.
 

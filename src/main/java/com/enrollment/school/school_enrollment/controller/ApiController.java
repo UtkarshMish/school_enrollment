@@ -1,23 +1,28 @@
 package com.enrollment.school.school_enrollment.controller;
 
-import java.util.HashMap;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
-import com.enrollment.school.school_enrollment.entity.Fees;
+import com.enrollment.school.models.StudentModel;
+import com.enrollment.school.school_enrollment.entity.Student;
 import com.enrollment.school.school_enrollment.entity.subject.Assessments;
 import com.enrollment.school.school_enrollment.entity.subject.Subject;
 import com.enrollment.school.school_enrollment.entity.users.Role;
 import com.enrollment.school.school_enrollment.entity.users.Users;
 import com.enrollment.school.school_enrollment.service.AssessmentService;
-import com.enrollment.school.school_enrollment.service.FeesService;
 import com.enrollment.school.school_enrollment.service.RolesService;
+import com.enrollment.school.school_enrollment.service.StudentService;
 import com.enrollment.school.school_enrollment.service.SubjectService;
 import com.enrollment.school.school_enrollment.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,8 +34,15 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api")
 @AllArgsConstructor
 public class ApiController {
+    /**
+     *
+     */
+
     @Autowired
     private final UserService userService;
+
+    @Autowired
+    private final StudentService studentService;
     @Autowired
     private final RolesService rolesService;
 
@@ -41,7 +53,18 @@ public class ApiController {
     private final AssessmentService assessmentService;
 
     @Autowired
-    private final FeesService feesService;
+    private final StudentService feesService;
+
+    private final Map<String, Boolean> successResponse = Map.of("success", true);
+
+    @ExceptionHandler(value = SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> sqlContstraintHandler(
+            SQLIntegrityConstraintViolationException exception) {
+        String errorMessage = exception.getLocalizedMessage().split("for")[0].trim();
+        return ResponseEntity.badRequest().body(
+                Map.of("error", errorMessage));
+
+    }
 
     @GetMapping("/users")
     public ResponseEntity<List<Users>> usersList() {
@@ -59,29 +82,30 @@ public class ApiController {
         return ResponseEntity.ok(subjectService.findAll());
     }
 
-    @GetMapping("/fees")
-    public ResponseEntity<List<Fees>> feesList() {
+    @GetMapping("/students")
+    public ResponseEntity<List<Student>> feesList() {
         return ResponseEntity.ok(feesService.findAll());
     }
 
     @PostMapping("/student")
-    public ResponseEntity<Fees> createFees(@RequestBody Fees fees) {
-        String roleName = fees.getUser().getRole();
-        if (roleName.equals("student")) {
-            final Users user = userService.findOne(fees.getUser().getName());
-            final Role role = rolesService.findByName(roleName);
-            fees.getUser().setRole(role == null ? rolesService.save(new Role(fees.getUser().getRole())) : role);
+    public ResponseEntity<Map<String, Boolean>> createStudent(
+            @RequestBody StudentModel student) {
+        final String STUDENT_ROLE = "student";
+        Role role = rolesService.findByName(STUDENT_ROLE);
+        if (role == null) {
+            role = rolesService.save(new Role(STUDENT_ROLE));
+        }
+        studentService.save(
+                new Users(student.getName(), student.getEmail(), student.getPassword(), student.getAge(),
+                        student.getPhone(), role),
+                student.getFees());
+        return ResponseEntity.ok(successResponse);
 
-            fees.setUser(user == null ? userService.save(fees.getUser()) : user);
-            return ResponseEntity.ok(feesService.save(fees));
 
-        } else
-            return ResponseEntity.badRequest().body(null);
     }
 
     @PostMapping("/users")
     public ResponseEntity<Users> createUser(@RequestBody Users user) {
-
         Role role = rolesService.findByName(user.getRole());
         if (role != null) {
             user.setRole(role);
@@ -99,11 +123,15 @@ public class ApiController {
                 .save(subject));
     }
 
-    @DeleteMapping("/users/all")
-    public ResponseEntity<HashMap<String, Boolean>> deleteUsers() {
-        userService.removeAll();
-        var response = new HashMap<String, Boolean>(1);
-        response.put("Success", true);
-        return ResponseEntity.ok(response);
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<Map<String, Boolean>> deleteUsers(@PathVariable("userId") Integer userId) {
+        try {
+            userService.removeOneById(userId);
+
+        } catch (Exception e) {
+            Logger.getGlobal().info(e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(successResponse);
     }
 }

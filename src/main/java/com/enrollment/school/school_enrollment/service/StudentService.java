@@ -2,8 +2,9 @@ package com.enrollment.school.school_enrollment.service;
 
 import java.util.List;
 
-import com.enrollment.school.school_enrollment.entity.Fees;
-import com.enrollment.school.school_enrollment.repository.FeesRepository;
+import com.enrollment.school.school_enrollment.entity.Student;
+import com.enrollment.school.school_enrollment.entity.users.Users;
+import com.enrollment.school.school_enrollment.repository.StudentRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -16,26 +17,26 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class FeesService {
+public class StudentService {
     @Autowired
-    private final FeesRepository repository;
+    private final StudentRepository repository;
 
-    public List<Fees> findAll() {
+    public List<Student> findAll() {
 
         return repository.findAll();
     }
 
-    public List<Fees> findAll(Sort sort) {
+    public List<Student> findAll(Sort sort) {
 
         return repository.findAll(sort);
     }
 
-    public List<Fees> findAllById(Iterable<Integer> ids) {
+    public List<Student> findAllById(Iterable<Integer> ids) {
 
         return repository.findAllById(ids);
     }
 
-    public <S extends Fees> List<S> saveAll(Iterable<S> entities) {
+    public <S extends Student> List<S> saveAll(Iterable<S> entities) {
 
         return repository.saveAll(entities);
     }
@@ -44,24 +45,29 @@ public class FeesService {
         repository.deleteAllInBatch();
     }
 
-    public <S extends Fees> List<S> findAll(Example<S> example) {
+    public <S extends Student> List<S> findAll(Example<S> example) {
 
         return repository.findAll(example);
     }
 
-    public <S extends Fees> List<S> findAll(Example<S> example, Sort sort) {
+    public <S extends Student> List<S> findAll(Example<S> example, Sort sort) {
 
         return repository.findAll(example, sort);
     }
 
-    public Page<Fees> findAll(Pageable pageable) {
+    public Page<Student> findAll(Pageable pageable) {
 
         return repository.findAll(pageable);
     }
 
-    public <S extends Fees> S save(S entity) {
+    public Student save(Student entity) {
 
         return repository.save(entity);
+    }
+
+    public Student save(Users entity, Number fees) {
+
+        return repository.save(new Student(entity, fees));
     }
 
     public boolean existsById(Integer id) {

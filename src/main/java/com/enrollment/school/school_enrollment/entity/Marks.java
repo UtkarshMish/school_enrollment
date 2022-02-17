@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Marks {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
     @ManyToOne(cascade = CascadeType.ALL, targetEntity = Users.class)
