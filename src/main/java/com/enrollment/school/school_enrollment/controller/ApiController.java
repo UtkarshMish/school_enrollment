@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.enrollment.school.models.StudentModel;
 import com.enrollment.school.school_enrollment.entity.Student;
 import com.enrollment.school.school_enrollment.entity.subject.Assessments;
 import com.enrollment.school.school_enrollment.entity.subject.Subject;
 import com.enrollment.school.school_enrollment.entity.users.Role;
 import com.enrollment.school.school_enrollment.entity.users.Users;
+import com.enrollment.school.school_enrollment.models.StudentModel;
 import com.enrollment.school.school_enrollment.service.AssessmentService;
 import com.enrollment.school.school_enrollment.service.RolesService;
 import com.enrollment.school.school_enrollment.service.StudentService;
@@ -126,7 +126,17 @@ public class ApiController {
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Map<String, Boolean>> deleteUsers(@PathVariable("userId") Integer userId) {
         try {
-            userService.removeOneById(userId);
+            Users user = userService.findOneById(userId);
+            if (user != null) {
+                boolean isStudent = user.getRole().equalsIgnoreCase("student");
+                if (isStudent) {
+                    studentService.deleteStudentFeesById(user.getId());
+                }
+                userService.removeOneById(userId);
+
+            } else {
+                throw new NullPointerException();
+            }
 
         } catch (Exception e) {
             Logger.getGlobal().info(e.getMessage());

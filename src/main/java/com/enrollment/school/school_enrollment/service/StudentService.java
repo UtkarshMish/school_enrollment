@@ -45,6 +45,14 @@ public class StudentService {
         repository.deleteAllInBatch();
     }
 
+    public void deleteStudentFeesById(Integer id) {
+        repository.deleteStudentById(id);
+    }
+
+    public void deleteStudent(Student student) {
+        repository.delete(student);
+    }
+
     public <S extends Student> List<S> findAll(Example<S> example) {
 
         return repository.findAll(example);

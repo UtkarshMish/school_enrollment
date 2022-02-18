@@ -1,6 +1,7 @@
 package com.enrollment.school.school_enrollment.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.enrollment.school.school_enrollment.entity.users.Users;
 import com.enrollment.school.school_enrollment.repository.UserRepository;
@@ -22,6 +23,10 @@ public class UserService {
         return user;
     }
 
+    public Users findOneById(Integer id) {
+        Optional<Users> user = userRepository.findById(id);
+        return user.isPresent() ? user.get() : null;
+    }
     public void removeOneById(Integer id) {
         userRepository.deleteById(id);
     }

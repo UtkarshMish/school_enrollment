@@ -1,4 +1,4 @@
-package com.enrollment.school.models;
+package com.enrollment.school.school_enrollment.models;
 
 import java.io.Serializable;
 
