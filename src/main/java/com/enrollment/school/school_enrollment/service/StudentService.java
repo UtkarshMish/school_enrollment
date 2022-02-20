@@ -1,6 +1,7 @@
 package com.enrollment.school.school_enrollment.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.enrollment.school.school_enrollment.entity.Student;
 import com.enrollment.school.school_enrollment.entity.users.Users;
@@ -31,9 +32,20 @@ public class StudentService {
         return repository.findAll(sort);
     }
 
+
     public List<Student> findAllById(Iterable<Integer> ids) {
 
         return repository.findAllById(ids);
+    }
+
+    public Student findById(Integer id) {
+        Optional<Student> student = repository.findById(id);
+        return student.isPresent() ? student.get() : null;
+    }
+
+    public Student findByUserId(Integer id) {
+
+        return repository.findByUserId(id);
     }
 
     public <S extends Student> List<S> saveAll(Iterable<S> entities) {

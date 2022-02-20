@@ -35,15 +35,15 @@ public class Users {
 
     @Column(nullable = false)
     @Pattern(regexp = "^[a-z][a-z 0-9._]{0,200}[a-z0-9]$", flags = Flag.CASE_INSENSITIVE)
-    @NotNull(message = "required value")
+    @NotNull(message = "name is required")
     private String name;
 
     @Column(nullable = false, unique = true)
-    @NotNull(message = "required value")
+    @NotNull(message = "email is required")
     private String email;
 
     @Column(nullable = false)
-    @NotNull(message = "required value")
+    @NotNull(message = "password is required")
     @Getter(value = AccessLevel.NONE)
     private String password;
 

@@ -1,36 +1,59 @@
 package com.enrollment.school.school_enrollment.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-import com.enrollment.school.school_enrollment.entity.users.Users;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.MODULE)
 @Data
 @Entity
+@Table(name = "attendance", uniqueConstraints = { @UniqueConstraint(columnNames = { "student_id", "date" }) })
 public class Attendance {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Users student;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false)
+    private Student student;
 
     @Column(nullable = false)
-    private LocalDateTime dateTime;
+    private LocalDate date;
 
     @Column(nullable = false)
+    @JsonProperty(required = true)
     private Boolean isPresent;
 
+    public Attendance(Student student, LocalDate dateTime, boolean isPresent) {
+        this(student, isPresent);
+        this.date = dateTime == null ? this.date : dateTime;
+    }
+
+    public Attendance(Student student, boolean isPresent) {
+        this.student = student;
+        this.date = LocalDate.now();
+        this.isPresent = isPresent;
+    }
+
+    public String getStudent() {
+        return student.getUser().getName();
+    }
+
+    public Integer getRollNumber() {
+        return student.getRoleId();
+    }
 }

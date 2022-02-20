@@ -29,6 +29,11 @@ public class AttendanceService {
         return repository.findAll(sort);
     }
 
+    public List<Attendance> findByStudentId(Integer id) {
+
+        return repository.findByStudentId(id);
+    }
+
     public List<Attendance> findAllById(Iterable<Integer> ids) {
 
         return repository.findAllById(ids);

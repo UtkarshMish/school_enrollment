@@ -5,13 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.enrollment.school.school_enrollment.entity.Attendance;
 import com.enrollment.school.school_enrollment.entity.Student;
 import com.enrollment.school.school_enrollment.entity.subject.Assessments;
 import com.enrollment.school.school_enrollment.entity.subject.Subject;
 import com.enrollment.school.school_enrollment.entity.users.Role;
 import com.enrollment.school.school_enrollment.entity.users.Users;
+import com.enrollment.school.school_enrollment.models.AttendanceModel;
 import com.enrollment.school.school_enrollment.models.StudentModel;
 import com.enrollment.school.school_enrollment.service.AssessmentService;
+import com.enrollment.school.school_enrollment.service.AttendanceService;
 import com.enrollment.school.school_enrollment.service.RolesService;
 import com.enrollment.school.school_enrollment.service.StudentService;
 import com.enrollment.school.school_enrollment.service.SubjectService;
@@ -34,43 +37,34 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api")
 @AllArgsConstructor
 public class ApiController {
-    /**
-     *
-     */
-
     @Autowired
     private final UserService userService;
-
     @Autowired
     private final StudentService studentService;
     @Autowired
     private final RolesService rolesService;
-
     @Autowired
     private final SubjectService subjectService;
-
     @Autowired
     private final AssessmentService assessmentService;
-
     @Autowired
-    private final StudentService feesService;
+    private final AttendanceService attendanceService;
 
     private final Map<String, Boolean> successResponse = Map.of("success", true);
 
     @ExceptionHandler(value = SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<Map<String, String>> sqlContstraintHandler(
+    public ResponseEntity<Map<String, String>> exceptionHandler(
             SQLIntegrityConstraintViolationException exception) {
-        String errorMessage = exception.getLocalizedMessage().split("for")[0].trim();
+        String errorMessage = splitExceptionMessage(exception);
         return ResponseEntity.badRequest().body(
                 Map.of("error", errorMessage));
 
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<List<Users>> usersList() {
-        return ResponseEntity.ok(userService
-                .findAll());
+    private <S extends Exception> String splitExceptionMessage(S exception) {
+        return exception.getLocalizedMessage().split("for")[0].trim();
     }
+
 
     @GetMapping("/roles")
     public ResponseEntity<List<Role>> roleList() {
@@ -82,9 +76,18 @@ public class ApiController {
         return ResponseEntity.ok(subjectService.findAll());
     }
 
+    @PostMapping("/subject")
+    public ResponseEntity<Subject> createSubject(@RequestBody Subject subject) {
+        for (Assessments assessments : subject.getAssessmentList()) {
+            assessmentService.save(assessments);
+        }
+        return ResponseEntity.ok(subjectService
+                .save(subject));
+    }
+
     @GetMapping("/students")
     public ResponseEntity<List<Student>> feesList() {
-        return ResponseEntity.ok(feesService.findAll());
+        return ResponseEntity.ok(studentService.findAll());
     }
 
     @PostMapping("/student")
@@ -100,8 +103,12 @@ public class ApiController {
                         student.getPhone(), role),
                 student.getFees());
         return ResponseEntity.ok(successResponse);
+    }
 
-
+    @GetMapping("/users")
+    public ResponseEntity<List<Users>> usersList() {
+        return ResponseEntity.ok(userService
+                .findAll());
     }
 
     @PostMapping("/users")
@@ -114,14 +121,7 @@ public class ApiController {
                 .save(user));
     }
 
-    @PostMapping("/subject")
-    public ResponseEntity<Subject> createSubject(@RequestBody Subject subject) {
-        for (Assessments assessments : subject.getAssessmentList()) {
-            assessmentService.save(assessments);
-        }
-        return ResponseEntity.ok(subjectService
-                .save(subject));
-    }
+
 
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Map<String, Boolean>> deleteUsers(@PathVariable("userId") Integer userId) {
@@ -142,6 +142,32 @@ public class ApiController {
             Logger.getGlobal().info(e.getMessage());
             return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(successResponse);
+    }
+
+    @GetMapping("/attendance")
+    public ResponseEntity<List<Attendance>> attendanceList() {
+        return ResponseEntity.ok(attendanceService.findAll());
+    }
+
+    @GetMapping("/attendance/{id}")
+    public ResponseEntity<List<Attendance>> getStudentAttendance(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(attendanceService.findByStudentId(id));
+    }
+
+    @PostMapping("/attendance")
+    public ResponseEntity<Map<String, Boolean>> addAttendances(@RequestBody List<AttendanceModel> attendances) {
+
+        attendanceService.saveAll(
+
+                attendances.stream().map(
+                        student -> new Attendance(
+                                studentService.findById(
+                                        student.getRollNo()),
+                                student.getDate(),
+                                student.isPresent()))
+                        .toList());
+
         return ResponseEntity.ok(successResponse);
     }
 }

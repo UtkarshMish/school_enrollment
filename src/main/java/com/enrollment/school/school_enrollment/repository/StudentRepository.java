@@ -12,8 +12,11 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Integer> {
-    @Transactional
     @Modifying
+    @Transactional(rollbackOn = Student.class, dontRollbackOn = Exception.class)
     @Query("DELETE FROM Student studnt where user.id = :id")
     public void deleteStudentById(@Param("id") Integer id);
+
+    @Query("SELECT s FROM Student s where user.id = :id")
+    public Student findByUserId(@Param("id") Integer id);
 }
