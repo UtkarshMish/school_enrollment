@@ -1,6 +1,7 @@
 package com.enrollment.school.school_enrollment.controller;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
@@ -146,12 +148,17 @@ public class ApiController {
     }
 
     @GetMapping("/attendance")
-    public ResponseEntity<List<Attendance>> attendanceList() {
+    public ResponseEntity<List<Attendance>> attendanceList(
+            @RequestParam("date") CharSequence date) {
+        if (date != null) {
+            return ResponseEntity.ok(attendanceService.findAllByDate(LocalDate.parse(date)));
+        }
         return ResponseEntity.ok(attendanceService.findAll());
     }
 
     @GetMapping("/attendance/{id}")
     public ResponseEntity<List<Attendance>> getStudentAttendance(@PathVariable("id") Integer id) {
+
         return ResponseEntity.ok(attendanceService.findByStudentId(id));
     }
 

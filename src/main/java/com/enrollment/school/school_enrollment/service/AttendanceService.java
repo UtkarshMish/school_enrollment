@@ -1,5 +1,6 @@
 package com.enrollment.school.school_enrollment.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,10 @@ public class AttendanceService {
         return repository.findByStudentId(id);
     }
 
+    public List<Attendance> findAllByDate(LocalDate date) {
+
+        return repository.findAllByDate(date);
+    }
     public List<Attendance> findAllById(Iterable<Integer> ids) {
 
         return repository.findAllById(ids);
